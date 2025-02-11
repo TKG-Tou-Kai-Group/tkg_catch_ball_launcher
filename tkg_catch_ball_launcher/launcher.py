@@ -139,7 +139,8 @@ class CatchBallLauncher(Node):
                 if x_min_range > x:
                     x_min_range = x
                     y_min_range = y
-                    min_range = self.scan.ranges[i]
+                    # オフセットの変化分があるので、self.scan.ranges[i]ではない
+                    min_range = math.sqrt(x ** 2 + y ** 2)
             x = x_min_range
             y = y_min_range
 
