@@ -18,7 +18,7 @@ class ExtractObject:
     target_width = 1.0
     target_height = 2.0
     
-    def __init__(self, camera_matrix, dist_coeffs, camera_x = 0.08, camera_y = -0.01, camera_z = -0.06, target_z = 0.3, target_width = 1.0, target_height = 0.6):
+    def __init__(self, camera_matrix, dist_coeffs, camera_x = 0.08, camera_y = -0.01, camera_z = -0.06, target_z = 0.6, target_width = 1.0, target_height = 1.2):
         self.camera_matrix = camera_matrix
         self.dist_coeffs = dist_coeffs
         self.camera_x = camera_x

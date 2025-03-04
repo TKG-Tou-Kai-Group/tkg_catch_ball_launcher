@@ -27,12 +27,12 @@ class CatchBallLauncher(Node):
         # rpm = 3859.3
         self.TARGET_RPM = 3800
         # 射出時減速分
-        self.TARGET_RPM_ADD = 1000
+        self.TARGET_RPM_ADD = 500
 
         # どの範囲で遊ぶかを指定
         self.PLAY_FIELD_START_DISTANCE = 2.0 # ロボットが検知を始める距離
         self.PLAY_FIELD_END_DISTANCE = 4.0   # ロボットが検知を終わる距離
-        self.PLAY_FIELD_WIDTH = 0.3          # ロボットが検知できる範囲の横幅
+        self.PLAY_FIELD_WIDTH = 0.6          # ロボットが検知できる範囲の横幅
 
         self.AUTO_MODE_INIT = 0
         self.AUTO_MODE_TRACKING = 1
@@ -160,6 +160,7 @@ class CatchBallLauncher(Node):
                     # 切り抜いた画像上の点を元の画像上の点に変換する関数
                     # （今回は対象物の地上高0.3m付近をしめす一番下の中点の位置を取得）
                     (result_x, result_y) = self.extractor.convert_croped_point_to_image_point(128//2, 256)
+                    (_, result_y_top) = self.extractor.convert_croped_point_to_image_point(128//2, 0)
 
                     image_h, image_w, _ = self.image.shape
                     if result_x < 10 or result_x > image_w - 10:
@@ -169,11 +170,12 @@ class CatchBallLauncher(Node):
                     # デプス画像上のx座標に変換
                     depth_result_x = result_x * depth_image_w / image_w
                     depth_detect_y = -1
-                    for i in range(depth_image_h):
+                    for i in range(int(depth_image_h - result_y_top)):
+                        current_y = int(i + result_y_top)
                         for v in range(10):
                             # 最も近い物体の前後0.4m以内で最も高い場所（おそらく頭部）の位置を算出
-                            if self.depth_image[i][int(depth_result_x + v - 5)] / 1000.0 > min_range - 0.4 and self.depth_image[i][int(depth_result_x + v - 5)] / 1000.0 < min_range + 0.4:
-                                depth_detect_y = i
+                            if self.depth_image[current_y][int(depth_result_x + 10*(v - 5))] / 1000.0 > min_range - 0.4 and self.depth_image[current_y][int(depth_result_x + 10*(v - 5))] / 1000.0 < min_range + 0.4:
+                                depth_detect_y = current_y
                                 break
                         if not depth_detect_y == -1:
                             break
@@ -197,7 +199,7 @@ class CatchBallLauncher(Node):
                         target_pitch = math.radians(27.9)
                     if target_pitch > math.radians(-8):
                         self.pitch_pub.publish(Float64(data=float(target_pitch)))
-                        self.roller_pub.publish(Float64(data=float(self.TARGET_RPM + self.TARGET_RPM_ADD)))
+                        #self.roller_pub.publish(Float64(data=float(self.TARGET_RPM + self.TARGET_RPM_ADD)))
 
                     # 目標地点への発射姿勢・発射速度に到達したとき
                     if abs(target_pitch - current_pitch) <= math.radians(5.0) and abs(current_rpm - self.TARGET_RPM - self.TARGET_RPM_ADD) <= 200:
