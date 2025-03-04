@@ -199,7 +199,7 @@ class CatchBallLauncher(Node):
                         target_pitch = math.radians(27.9)
                     if target_pitch > math.radians(-8):
                         self.pitch_pub.publish(Float64(data=float(target_pitch)))
-                        #self.roller_pub.publish(Float64(data=float(self.TARGET_RPM + self.TARGET_RPM_ADD)))
+                        self.roller_pub.publish(Float64(data=float(self.TARGET_RPM + self.TARGET_RPM_ADD)))
 
                     # 目標地点への発射姿勢・発射速度に到達したとき
                     if abs(target_pitch - current_pitch) <= math.radians(5.0) and abs(current_rpm - self.TARGET_RPM - self.TARGET_RPM_ADD) <= 200:
